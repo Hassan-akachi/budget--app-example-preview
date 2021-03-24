@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".budgetPage">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginRight="50dp"
+        android:id="@+id/budget_name_layout"
+       >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BUDGET \n NAME"
+            android:textStyle="bold"
+            android:textSize="20sp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="20sp"
+            tools:text="school plan"
+            android:id="@+id/budget_name_input"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/budget_amount_layout"
+        android:layout_below="@+id/budget_name_layout"
+         >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BUDGET\n AMOUNT"
+            android:textStyle="bold"
+            android:textSize="20sp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            tools:text="$1000"
+            android:id="@+id/budget_amount_input"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/total_amount_layout"
+        android:layout_below="@id/budget_amount_layout"  >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TOTAL\n AMOUNT"
+            android:textStyle="bold"
+            android:textSize="20sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            tools:text="$1000"
+            android:id="@+id/budget_total_input"
+            />
+    </LinearLayout>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/total_amount_layout"
+        android:stretchColumns="0,2,3"
+        android:layout_marginTop="10dp"
+        android:id="@+id/table_title">
+       <TableRow
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:background="#FF6200EE"
+           android:padding="10dp">
+
+           <TextView
+               android:layout_height="wrap_content"
+               android:layout_width="wrap_content"
+               android:text="ITEM"
+               android:id="@+id/item_roll"
+               android:gravity="center"
+               />
+           <TextView
+               android:layout_height="wrap_content"
+               android:layout_width="wrap_content"
+               android:text="QUANTITY"
+               android:id="@+id/quantity_roll"
+               android:gravity="center"
+               />
+           <TextView
+               android:layout_height="wrap_content"
+               android:layout_width="wrap_content"
+               android:text="PRICE"
+               android:id="@+id/price_roll"
+               android:gravity="center"
+              />
+
+
+           <TextView
+               android:id="@+id/total_roll"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:gravity="center"
+               android:text="TOTAL" />
+       </TableRow>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/budget_recycle"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp"
+            />
+    </TableLayout>
+
+
+
+</RelativeLayout>

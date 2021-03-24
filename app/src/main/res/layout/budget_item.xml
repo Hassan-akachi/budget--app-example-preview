@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:stretchColumns="0,2,3"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <EditText
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:hint="item"
+            android:id="@+id/name_edit"
+            android:inputType="text"
+            />
+        <EditText
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:hint="quantity"
+            android:id="@+id/quantity_edit"
+            android:inputType="number"
+            />
+        <EditText
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:hint="price"
+            android:id="@+id/amount_edit"
+            android:inputType="number"
+            />
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:hint="total"
+            android:id="@+id/total_edit"
+            />
+    </TableRow>
+</TableLayout>
