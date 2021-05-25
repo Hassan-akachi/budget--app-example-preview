@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,12 +20,16 @@ import com.example.android.planit.data.PlanitDbHelper;
 import com.example.android.planit.data.planitContract;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity  {
     TextView budgetNameInput,budgetAmountInput;
+    ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        listView = findViewById(R.id.list_view);
         budgetNameInput=findViewById(R.id.budget_name_input);
         budgetAmountInput=findViewById(R.id.budget_amount_input);
         // Setup FAB to open EditorActivity
@@ -42,22 +48,17 @@ public class MainActivity extends AppCompatActivity  {
         // and pass the context, which is the current activity.
         PlanitDbHelper mDbHelper = new PlanitDbHelper(this);
 
-        // Create and/or open a database to read from it
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        ArrayList<BudgetModel> budgetModelArrayList = new ArrayList<>();
+        budgetModelArrayList = mDbHelper.getBudgetData();
+        ArrayList<String> tempArray = new ArrayList<>();
+        for (int i=0; i < budgetModelArrayList.size(); i++){
+            tempArray.add(budgetModelArrayList.get(i).getBudgetName());
+            tempArray.add(String.valueOf(budgetModelArrayList.get(i).getTotalPrice()));
 
-        // Perform this raw SQL query "SELECT * FROM pets"
-        // to get a Cursor that contains all rows from the pets table.
-        Cursor cursor = db.rawQuery("SELECT * FROM " + planitContract.planitEntry.TABLE_NAME, null);
-        try {
-            // Display the number of rows in the Cursor (which reflects the number of rows in the
-            // pets table in the database).
-            TextView displayView = (TextView) findViewById(R.id.text);
-            displayView.setText("Number of rows in pets database table: " + cursor.getCount());
-        } finally {
-            // Always close the cursor when you're done reading from it. This releases all its
-            // resources and makes it invalid.
-            cursor.close();
+            
         }
+        ArrayAdapter<String> arrayAdapter =new ArrayAdapter<String>(this, R.layout.main_list_item, tempArray);
+        listView.setAdapter(arrayAdapter);
     }
 
 
