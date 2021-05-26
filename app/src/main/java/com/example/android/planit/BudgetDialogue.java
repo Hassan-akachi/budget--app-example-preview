@@ -24,7 +24,7 @@ public class BudgetDialogue extends AppCompatDialogFragment {
         // enable to find view
         LayoutInflater inflater = getActivity().getLayoutInflater();
         view = inflater.inflate(R.layout.budget_info, null);
-        //dailogue layout
+        //dailoe layout
         builder.setView(view);
         builder.setTitle("Budget Info");
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {

@@ -56,7 +56,7 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(Constants.BUDGET_NAME, budgetModel.getBudgetName());
         contentValues.put(Constants.BUDGET_ID, budgetModel.getBudgetId());
-        contentValues.put(Constants.BUDGET_TOTAL, budgetModel.getTotalPrice());
+        contentValues.put(Constants.BUDGET_TOTAL, budgetModel.getBudgetPrice());
         SQLiteDatabase database = getWritableDatabase();
         database.insert(Constants.BUDGET_TABLE, null, contentValues);
         database.close();
@@ -84,13 +84,29 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
             }
             budgetModel.setBudgetName(cursor.getString(1));
             budgetModel.setBudgetId(cursor.getInt(2));
-            budgetModel.setTotalPrice(cursor.getInt(3));
+            budgetModel.setBudgetPrice(cursor.getInt(3));
             budgetModelArrayList.add(budgetModel);
             cursor.moveToNext();
             i++;
         }
         cursor.close();
         return budgetModelArrayList;
+    }
+    public ArrayList<ItemModel>getItemData(int Id){
+        ArrayList<ItemModel>itemModelArrayList =new ArrayList<>();
+        SQLiteDatabase slqDataItem=getReadableDatabase();
+        Cursor itemCursor =slqDataItem.query(Constants.ITEMS_TABLE,new String[]{Constants.ITEM_ID},Constants.ITEM_ID +" =?",
+        new String[]{String.valueOf(Id)},null,null,null);
+        while (itemCursor.moveToNext()){
+            ItemModel itemModel = new ItemModel();
+            itemModel.setID(itemCursor.getInt(4));
+            itemModel.setName(itemCursor.getString(1));
+            itemModel.setQuantity(itemCursor.getInt(3));
+            itemModel.setAmount(itemCursor.getInt(2));
+            itemModelArrayList.add(itemModel);
+        }
+        itemCursor.close();
+        return itemModelArrayList;
     }
 
     @Override

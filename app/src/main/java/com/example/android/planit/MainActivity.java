@@ -2,10 +2,9 @@ package com.example.android.planit;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,51 +16,46 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.planit.data.PlanitDbHelper;
-import com.example.android.planit.data.planitContract;
+import com.example.android.planit.data.reposirtory;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity  {
     TextView budgetNameInput,budgetAmountInput;
-    ListView listView;
+    RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        listView = findViewById(R.id.list_view);
-        budgetNameInput=findViewById(R.id.budget_name_input);
-        budgetAmountInput=findViewById(R.id.budget_amount_input);
+        recyclerView = findViewById(R.id.list_view);
+//        budgetNameInput=findViewById(R.id.budget_name_input);
+//        budgetAmountInput=findViewById(R.id.budget_amount_input);
         // Setup FAB to open EditorActivity
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            public
+            @Override void onClick(View view) {
             openDialogue();
             }
         });
-        displayDatabaseInfo();
     }
 
     private void displayDatabaseInfo() {
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        PlanitDbHelper mDbHelper = new PlanitDbHelper(this);
+    ArrayList<BudgetModel> budgetData = reposirtory.getbudgetDatabaseInfo(this);
 
-        ArrayList<BudgetModel> budgetModelArrayList = new ArrayList<>();
-        budgetModelArrayList = mDbHelper.getBudgetData();
-        ArrayList<String> tempArray = new ArrayList<>();
-        for (int i=0; i < budgetModelArrayList.size(); i++){
-            tempArray.add(budgetModelArrayList.get(i).getBudgetName());
-            tempArray.add(String.valueOf(budgetModelArrayList.get(i).getTotalPrice()));
-
-            
-        }
-        ArrayAdapter<String> arrayAdapter =new ArrayAdapter<String>(this, R.layout.main_list_item, tempArray);
-        listView.setAdapter(arrayAdapter);
+        BudgetDataAdapter budgetDataAdapter= new BudgetDataAdapter(this,budgetData);
+        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(budgetDataAdapter);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        displayDatabaseInfo();
 
+    }
 
     // used to access the dailogue class (dailogueScreen)
     public void openDialogue() {
