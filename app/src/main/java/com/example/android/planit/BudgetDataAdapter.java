@@ -23,7 +23,7 @@ public class BudgetDataAdapter extends RecyclerView.Adapter<BudgetDataAdapter.vi
     public BudgetDataAdapter(Context context, ArrayList<BudgetModel> budgetModelList){
 
         this.context=context;
-        this.budgetModels = budgetModels;
+        this.budgetModels = budgetModelList;
         Log.v("budgetAdapter","show error-"+context);
     }
     @NonNull
@@ -37,8 +37,8 @@ public class BudgetDataAdapter extends RecyclerView.Adapter<BudgetDataAdapter.vi
 
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-    holder.BudgetAmount.setText(budgetModels.get(position).getBudgetName());
-    holder.BudgetAmount.setText(budgetModels.get(position).getBudgetPrice());
+    holder.BudgetName.setText(budgetModels.get(position).getBudgetName());
+    holder.BudgetAmount.setText(String.valueOf(budgetModels.get(position).getBudgetPrice()));
     }
 
     @Override

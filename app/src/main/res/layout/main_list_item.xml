@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp">
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:hint="budget name"
-   android:textSize="30sp"
-    android:id="@+id/budget_item_name"
-    />
+
     <TextView
+        android:id="@+id/budget_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Total amount-"
-        android:textSize="20sp"
+        android:hint="budget name"
+        android:textSize="30sp" />
+
+    <TextView
         android:id="@+id/total_item_amount"
-        android:layout_below="@+id/budget_item_name"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/budget_item_name"
+        android:hint="Total amount-"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/budget_item_amount"
