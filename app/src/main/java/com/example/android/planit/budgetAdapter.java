@@ -21,16 +21,19 @@ public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
     public  ArrayList<ItemModel> budgetModelList;
     private ArrayList<ItemModel> tempData = new ArrayList<>();
     private LayoutInflater inflater;
-    public final static String LOG_TAG=budgetAdapter.class.getSimpleName();
+    public final static String LOG_TAG= budgetAdapter.class.getSimpleName();
+    private Boolean finishedLoadingLayout = false;
     public budgetAdapter(Context context, ArrayList<ItemModel> budgetModelList){
 
        this.context=context;
         this.budgetModelList = budgetModelList;
+        tempData.addAll(budgetModelList);
         Log.v("budgetAdapter","show error-"+context);
     }
+
     @NonNull
     @Override
-    public budgetAdapter.budget onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public budget onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
      inflater=LayoutInflater.from(context);
     View view= inflater.inflate(R.layout.budget_item,parent,false);
         Log.v("budgetAdapter","show error");
@@ -39,9 +42,10 @@ public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
 
     @Override
     public void onBindViewHolder(@NonNull budget holder, int position) {
-        ItemModel tempItemModel = new ItemModel();
-        final int[] tempQuantity = {0};
-        final int[] tempAmount = {0};
+        setFinishedLoadingLayout(false);
+
+        ItemModel model= new ItemModel();
+
         holder.nameView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -55,12 +59,14 @@ public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                tempItemModel.setName(editable.toString());
-                tempData.add(position, tempItemModel);
-
+                if (finishedLoadingLayout) {
+                    model.setName(editable.toString());
+                    tempData.set(position, model);
+                }
 
             }
         });
+
         holder.quantityView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -74,10 +80,15 @@ public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                tempQuantity[0] = Integer.parseInt(editable.toString());
-                holder.totalView.setText(String.valueOf(tempQuantity[0] * tempAmount[0]));
-                tempItemModel.setQuantity(Integer.parseInt(editable.toString()));
-                tempData.add(position, tempItemModel);
+                if (finishedLoadingLayout) {
+                    int quantity = Integer.parseInt(editable.toString());
+                    int amount = Integer.parseInt(holder.amountView.getText().toString());
+                    model.setQuantity(quantity);
+                    int total = quantity * amount;
+                    model.setTotal(total);
+                    holder.totalView.setText(String.valueOf(total));
+                    tempData.set(position, model);
+                }
             }
         });
         holder.amountView.addTextChangedListener(new TextWatcher() {
@@ -93,32 +104,22 @@ public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                tempAmount[0] = Integer.parseInt(editable.toString());
-                holder.totalView.setText(String.valueOf(tempQuantity[0] * tempAmount[0]));
-                tempItemModel.setAmount(Integer.parseInt(editable.toString()));
-                tempData.add(position, tempItemModel);
+                if (finishedLoadingLayout) {
+                    int amount = Integer.parseInt(editable.toString());
+                    int quantity = Integer.parseInt(holder.quantityView.getText().toString());
+                    int total = quantity * amount;
+                    model.setTotal(total);
+                    holder.totalView.setText(String.valueOf(total));
+                    model.setAmount(Integer.parseInt(editable.toString()));
+                    tempData.set(position, model);
+                }
             }
         });
+        holder.nameView.setText(tempData.get(position).getName());
+        holder.quantityView.setText(String.valueOf(tempData.get(position).getQuantity()));
+        holder.amountView.setText(String.valueOf(tempData.get(position).getAmount()));
+        holder.totalView.setText(String.valueOf(tempData.get(position).getTotal()));
 
-
-        if (tempData.size() != 0) {
-            holder.nameView.setText(tempData.get(position).getName());
-            holder.quantityView.setText(String.valueOf(tempData.get(position).getQuantity()));
-            holder.amountView.setText(String.valueOf(budgetModelList.get(position).getAmount()));
-        } else {
-            holder.nameView.setText(budgetModelList.get(position).getName());
-
-            holder.quantityView.setText(String.valueOf(budgetModelList.get(position).getQuantity()));
-            holder.amountView.setText(String.valueOf(budgetModelList.get(position).getAmount()));
-
-            int num1 = Integer.parseInt(holder.quantityView.getText().toString());
-            int num2 = Integer.parseInt(holder.amountView.getText().toString());
-            total = num1 * num2;
-            holder.totalView.setText(String.valueOf(total));
-
-
-            Log.v("budgetAdapter", "show error-" + context);
-        }
     }
 
     @Override
@@ -141,9 +142,23 @@ public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
         }
     }
 
+    public void setNumberOfItems(int numberOfItems){
+        ItemModel itemModel = new ItemModel("", 0, 0, 0, 0);
+        for (int i = 0; i < numberOfItems; i++){
+            budgetModelList.add(itemModel);
+            tempData.add(itemModel);
+        }
+        notifyDataSetChanged();
+        setFinishedLoadingLayout(false);
+
+    }
+
     public  ArrayList<ItemModel> getData(){
         return tempData;
     }
 
+    public void setFinishedLoadingLayout(Boolean finishedLoadingLayout) {
+        this.finishedLoadingLayout = finishedLoadingLayout;
+    }
 }
 

@@ -2,7 +2,6 @@ package com.example.android.planit;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +12,7 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 public class BudgetDialogue extends AppCompatDialogFragment {
-    EditText EditBudgetName, EditBudgetAmount;
+    EditText EditBudgetName, EditBudgetAmount, number_of_items;
     private View view;
 
 
@@ -24,19 +23,25 @@ public class BudgetDialogue extends AppCompatDialogFragment {
         // enable to find view
         LayoutInflater inflater = getActivity().getLayoutInflater();
         view = inflater.inflate(R.layout.budget_info, null);
-        //dailoe layout
+
+        //dailogue layout
         builder.setView(view);
         builder.setTitle("Budget Info");
+        EditBudgetName = view.findViewById(R.id.edit_budget_name);
+        EditBudgetAmount = view.findViewById(R.id.edit_budget_amount);
+        number_of_items = view.findViewById(R.id.number_of_items);
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 //action taking when clicking in the ok button
                 String budgetName = EditBudgetName.getText().toString().trim();
                 int budgetAmount = Integer.parseInt(EditBudgetAmount.getText().toString());
+                int numberOfItems = Integer.parseInt(number_of_items.getText().toString());
 
                 Intent intent = new Intent(getActivity(), budgetPage.class);
                 intent.putExtra("keybudgetName", budgetName);
                 intent.putExtra("keybudgetAmount", budgetAmount);
+                intent.putExtra("number_of_items", numberOfItems);
 
                 startActivity(intent);
 
@@ -48,8 +53,7 @@ public class BudgetDialogue extends AppCompatDialogFragment {
 
             }
         });
-        EditBudgetName = view.findViewById(R.id.edit_budget_name);
-        EditBudgetAmount = view.findViewById(R.id.edit_budget_amount);
+
         return builder.create();
     }
     // enable edited text to return to return to the view
