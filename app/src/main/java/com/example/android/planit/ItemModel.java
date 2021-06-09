@@ -1,16 +1,23 @@
 package com.example.android.planit;
 
-import android.content.Context;
-
 public class ItemModel {
     private String name;
-    private int quantity, amount, ID;
+    private int quantity, amount, ID, total;
 
-    public ItemModel(String mName, int mID, int mQuantity, int mAmount) {
+    public ItemModel(String mName, int mID, int mQuantity, int mAmount, int total) {
         name = mName;
         quantity = mQuantity;
         amount = mAmount;
         ID = mID;
+        this.total = total;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
     }
 
     public ItemModel() {

@@ -56,7 +56,7 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(Constants.BUDGET_NAME, budgetModel.getBudgetName());
         contentValues.put(Constants.BUDGET_ID, budgetModel.getBudgetId());
-        contentValues.put(Constants.BUDGET_TOTAL, budgetModel.getBudgetPrice());
+        contentValues.put(Constants.BUDGET_TOTAL, budgetModel.getBudgetAmount());
         SQLiteDatabase database = getWritableDatabase();
         database.insert(Constants.BUDGET_TABLE, null, contentValues);
         database.close();
@@ -84,7 +84,7 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
             }
             budgetModel.setBudgetName(cursor.getString(1));
             budgetModel.setBudgetId(cursor.getInt(2));
-            budgetModel.setBudgetPrice(cursor.getInt(3));
+            budgetModel.setBudgetAmount(cursor.getInt(3));
             budgetModelArrayList.add(budgetModel);
             cursor.moveToNext();
             i++;
@@ -92,21 +92,23 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
         cursor.close();
         return budgetModelArrayList;
     }
-    public ArrayList<ItemModel>getItemData(int Id){
-        ArrayList<ItemModel>itemModelArrayList =new ArrayList<>();
-        SQLiteDatabase slqDataItem=getReadableDatabase();
-        Cursor itemCursor =slqDataItem.query(Constants.ITEMS_TABLE,new String[]{Constants.ITEM_ID},Constants.ITEM_ID +" =?",
-        new String[]{String.valueOf(Id)},null,null,null);
-        while (itemCursor.moveToNext()){
-            ItemModel itemModel = new ItemModel();
-            itemModel.setID(itemCursor.getInt(4));
-            itemModel.setName(itemCursor.getString(1));
-            itemModel.setQuantity(itemCursor.getInt(3));
-            itemModel.setAmount(itemCursor.getInt(2));
-            itemModelArrayList.add(itemModel);
+
+    public ArrayList<ItemModel> getItemData(int position){
+        ArrayList<ItemModel> list = new ArrayList<>();
+        ItemModel itemModel = new ItemModel();
+        SQLiteDatabase database =getReadableDatabase();
+        Cursor cursor = database.query(Constants.ITEMS_TABLE, null,  Constants.ITEM_ID + " = ?", new String[]{String.valueOf(position)}, null,null, null);
+        while (cursor.moveToNext()){
+            itemModel.setName(cursor.getString(1));
+            itemModel.setAmount(cursor.getInt(2));
+            itemModel.setQuantity(cursor.getInt(3));
+            itemModel.setID(cursor.getInt(4));
+            list.add(itemModel);
+            itemModel= new ItemModel();
+
         }
-        itemCursor.close();
-        return itemModelArrayList;
+        return list;
+
     }
 
     @Override

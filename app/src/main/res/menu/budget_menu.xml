@@ -7,4 +7,8 @@
     app:showAsAction="always"
     android:icon="@drawable/ic_check"
     />
+    <item
+        android:title="Add more items"
+        app:showAsAction="never"
+        android:id="@+id/add_more_items"/>
 </menu>
