@@ -38,17 +38,6 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
                 Constants.ITEM_PRICE + " INTEGER," +
                 Constants.ITEM_QUANTITY + " INTEGER," +
                 Constants.ITEM_ID + " INTEGER)");
-        // Create a String that contains the SQL statement to create the pets table
-//        String SQL_CREATE_PLANIT_TABLE =  "CREATE TABLE " + planitContract.planitEntry.TABLE_NAME + " ("
-//                + planitContract.planitEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-//                +planitContract.planitEntry.COLUMN_BUDGET_NAME + " INTEGER NOT NULL, "
-//                + planitContract.planitEntry.COLUMN_BUDGET_AMOUNT + " INTEGER NOT NULL, "
-//                + planitContract.planitEntry.COLUMN_TOTAL_AMOUNT + " INTEGER , "
-//                + planitContract.planitEntry.COLUMN_NAME + " TEXT NOT NULL, "
-//                + planitContract.planitEntry.COLUMN_QUANTITY + " INTEGER , "
-//                + planitContract.planitEntry.COLUMN_AMOUNT + " INTEGER , "
-//                + planitContract.planitEntry.COLUMN_TOTAL + " INTEGER DEFAULT 0); ";
-//        // Execute the SQL statement
 
     }
 
