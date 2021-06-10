@@ -23,6 +23,7 @@ public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
     private LayoutInflater inflater;
     public final static String LOG_TAG= budgetAdapter.class.getSimpleName();
     private Boolean finishedLoadingLayout = false;
+
     public budgetAdapter(Context context, ArrayList<ItemModel> budgetModelList){
 
        this.context=context;

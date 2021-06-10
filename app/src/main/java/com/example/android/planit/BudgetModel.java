@@ -4,11 +4,15 @@ public class BudgetModel {
     String budgetName;
     int budgetId;
     int budgetAmount;
+    int TotalAmount;
 
-    public BudgetModel(String mbudgetName, int mbudgetId, int mtotalPrice){
+
+
+    public BudgetModel(String mbudgetName, int mbudgetId, int mtotalPrice, int mtotalAmount){
         budgetName =mbudgetName;
         budgetId= mbudgetId;
         budgetAmount =mtotalPrice;
+        TotalAmount= mtotalAmount;
     }
 
     public BudgetModel(){
@@ -36,5 +40,12 @@ public class BudgetModel {
 
     public void setBudgetAmount(int budgetAmount) {
         this.budgetAmount = budgetAmount;
+    }
+    public int getTotalAmount() {
+        return TotalAmount;
+    }
+
+    public void setTotalAmount(int totalAmount) {
+        TotalAmount = totalAmount;
     }
 }

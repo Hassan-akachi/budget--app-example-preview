@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class budgetPage extends AppCompatActivity {
     RecyclerView recyclerView;
     TextView budgetNameInput, budgetAmountInput, totalRoll, budgetTotaltv;
-    int budgetAmount, number_of_items, budget_ID;
+    int budgetAmount, number_of_items, budget_ID, budgetTotalAmount;
     private PlanitDbHelper planitDbHelper;
     private SharedPreferences sharedPreferences;
     budgetAdapter adapter;
@@ -43,6 +43,8 @@ public class budgetPage extends AppCompatActivity {
         budget_ID = getIntent().getIntExtra("ID", -1);
         String budgetName = getIntent().getStringExtra("keybudgetName");
         budgetAmount = getIntent().getIntExtra("keybudgetAmount", 0);
+        budgetTotalAmount = getIntent().getIntExtra("totalAmount", 0);
+
         if (budget_ID == -1) {
             number_of_items = getIntent().getIntExtra("number_of_items", 0);
             ArrayList<ItemModel> budgetModelArrayList = populate();
@@ -54,6 +56,7 @@ public class budgetPage extends AppCompatActivity {
 
         budgetNameInput.setText(budgetName);
         budgetAmountInput.setText(String.valueOf(budgetAmount));
+        budgetTotaltv.setText(String.valueOf(budgetTotalAmount));
 
 
 
@@ -102,7 +105,12 @@ public class budgetPage extends AppCompatActivity {
         String budgetNameString = budgetNameInput.getText().toString();
         sharedPreferences = getSharedPreferences(Constants.BUDGET_PREFERENCES, MODE_PRIVATE);
         int previousID = sharedPreferences.getInt(Constants.BUDGET_PREVIOUS_ID, 0);
-        BudgetModel budgetModel = new BudgetModel(budgetNameString, previousID + 1, budgetAmount);
+        ArrayList<ItemModel>itemModelArrayList =adapter.getData();
+        int BudgetTotal = 0;
+        for (ItemModel itemModels:itemModelArrayList){
+          BudgetTotal= BudgetTotal+itemModels.getTotal();
+        }
+        BudgetModel budgetModel = new BudgetModel(budgetNameString, previousID + 1, budgetAmount, BudgetTotal);
         planitDbHelper.insetBudgetData(budgetModel);
     }
 
@@ -113,6 +121,7 @@ public class budgetPage extends AppCompatActivity {
             itemModel.setName(data.get(k).getName());
             itemModel.setAmount(data.get(k).getAmount());
             itemModel.setQuantity(data.get(k).getQuantity());
+            itemModel.setTotal(data.get(k).getTotal());
             itemModel.setID(sharedPreferences.getInt(Constants.BUDGET_PREVIOUS_ID, 0) + 1);
             planitDbHelper.insertItemData(itemModel);
             itemModel = new ItemModel();
