@@ -32,33 +32,25 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + Constants.BUDGET_TABLE + "(_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 Constants.BUDGET_NAME + " TEXT," +
                 Constants.BUDGET_ID + " INTEGER," +
-                Constants.BUDGET_TOTAL + " INTEGER )");
+                Constants.BUDGET_AMOUNT + " INTEGER ," +
+                Constants.TOTAL_AMOUNT + "INTEGER)");
         db.execSQL("CREATE TABLE " + Constants.ITEMS_TABLE + "(_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 Constants.ITEM_NAME + " TEXT," +
                 Constants.ITEM_PRICE + " INTEGER," +
                 Constants.ITEM_QUANTITY + " INTEGER," +
-                Constants.ITEM_ID + " INTEGER)");
-        // Create a String that contains the SQL statement to create the pets table
-//        String SQL_CREATE_PLANIT_TABLE =  "CREATE TABLE " + planitContract.planitEntry.TABLE_NAME + " ("
-//                + planitContract.planitEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-//                +planitContract.planitEntry.COLUMN_BUDGET_NAME + " INTEGER NOT NULL, "
-//                + planitContract.planitEntry.COLUMN_BUDGET_AMOUNT + " INTEGER NOT NULL, "
-//                + planitContract.planitEntry.COLUMN_TOTAL_AMOUNT + " INTEGER , "
-//                + planitContract.planitEntry.COLUMN_NAME + " TEXT NOT NULL, "
-//                + planitContract.planitEntry.COLUMN_QUANTITY + " INTEGER , "
-//                + planitContract.planitEntry.COLUMN_AMOUNT + " INTEGER , "
-//                + planitContract.planitEntry.COLUMN_TOTAL + " INTEGER DEFAULT 0); ";
-//        // Execute the SQL statement
-
+                Constants.ITEM_ID + " INTEGER," +
+                Constants.ITEM_TOTAL +"INTEGER)");
     }
 
     public void insetBudgetData(BudgetModel budgetModel){
         ContentValues contentValues = new ContentValues();
         contentValues.put(Constants.BUDGET_NAME, budgetModel.getBudgetName());
         contentValues.put(Constants.BUDGET_ID, budgetModel.getBudgetId());
-        contentValues.put(Constants.BUDGET_TOTAL, budgetModel.getBudgetAmount());
+        contentValues.put(Constants.BUDGET_AMOUNT, budgetModel.getBudgetAmount());
+        contentValues.put(Constants.TOTAL_AMOUNT,budgetModel.getTotalAmount());
         SQLiteDatabase database = getWritableDatabase();
         database.insert(Constants.BUDGET_TABLE, null, contentValues);
+
         database.close();
     }
 
@@ -68,6 +60,7 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
         contentValues.put(Constants.ITEM_PRICE, itemModel.getAmount());
         contentValues.put(Constants.ITEM_QUANTITY, itemModel.getQuantity());
         contentValues.put(Constants.ITEM_ID, itemModel.getID());
+        contentValues.put(Constants.ITEM_TOTAL,itemModel.getTotal());
         SQLiteDatabase database = getWritableDatabase();
         database.insert(Constants.ITEMS_TABLE, null, contentValues);
     }
@@ -85,6 +78,7 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
             budgetModel.setBudgetName(cursor.getString(1));
             budgetModel.setBudgetId(cursor.getInt(2));
             budgetModel.setBudgetAmount(cursor.getInt(3));
+            budgetModel.setTotalAmount(cursor.getInt(4));
             budgetModelArrayList.add(budgetModel);
             cursor.moveToNext();
             i++;
@@ -103,6 +97,7 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
             itemModel.setAmount(cursor.getInt(2));
             itemModel.setQuantity(cursor.getInt(3));
             itemModel.setID(cursor.getInt(4));
+            itemModel.setTotal(cursor.getInt(5));
             list.add(itemModel);
             itemModel= new ItemModel();
 

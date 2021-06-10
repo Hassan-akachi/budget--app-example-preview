@@ -14,17 +14,21 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.planit.data.PlanitDbHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity implements MainRecycleAdapter.onCLickListener  {
     TextView budgetNameInput,budgetAmountInput;
-    ListView listView;
+    RecyclerView recyclerView;
     ArrayList<String> tempArray;
+    MainRecycleAdapter mainRecycleAdapter;
     ArrayList<BudgetModel> budgetModelArrayList;
+
 
     @Override
     protected void onResume() {
@@ -36,30 +40,23 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        listView = findViewById(R.id.list_view);
-        budgetNameInput=findViewById(R.id.budget_name_input);
-        budgetAmountInput=findViewById(R.id.budget_amount_input);
+        recyclerView = findViewById(R.id.recyclyelist_view);
+        budgetNameInput = findViewById(R.id.budget_name_input);
+        budgetAmountInput = findViewById(R.id.budget_amount_input);
+
+
         // Setup FAB to open EditorActivity
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            openDialogue();
-            }
-        });
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(MainActivity.this, budgetPage.class);
-                intent.putExtra("ID", budgetModelArrayList.get(i).getBudgetId());
-                intent.putExtra("keybudgetName", tempArray.get(i));
-                intent.putExtra("keybudgetAmount", budgetModelArrayList.get(i).getBudgetAmount());
-                startActivity(intent);
+                openDialogue();
             }
         });
 
     }
+
+
 
     private void displayDatabaseInfo() {
         // To access our database, we instantiate our subclass of SQLiteOpenHelper
@@ -73,8 +70,13 @@ public class MainActivity extends AppCompatActivity  {
             tempArray.add(budgetModelArrayList.get(i).getBudgetName());
             
         }
-        ArrayAdapter<String> arrayAdapter =new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, tempArray);
-        listView.setAdapter(arrayAdapter);
+        mainRecycleAdapter = new MainRecycleAdapter(this, budgetModelArrayList);
+        mainRecycleAdapter.setOnCLickListener(MainActivity.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(mainRecycleAdapter);
+
+
     }
 
 
@@ -105,6 +107,13 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
-
-
+    @Override
+    public void onClick(BudgetModel budgetModel) {
+        Intent intent = new Intent(MainActivity.this, budgetPage.class);
+        intent.putExtra("ID", budgetModel.getBudgetId());
+        intent.putExtra("keybudgetName", budgetModel.getBudgetName());
+        intent.putExtra("keybudgetAmount", budgetModel.getBudgetAmount());
+        intent.putExtra("totalAmount", budgetModel.getTotalAmount());
+        startActivity(intent);
+    }
 }
