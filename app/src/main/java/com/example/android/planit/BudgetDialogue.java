@@ -12,8 +12,15 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 public class BudgetDialogue extends AppCompatDialogFragment {
+    private final boolean new_project;
+    private final int budget_id;
     EditText EditBudgetName, EditBudgetAmount, number_of_items;
     private View view;
+
+    public BudgetDialogue(boolean new_project, int budget_id) {
+        this.new_project = new_project;
+        this.budget_id = budget_id;
+    }
 
 
     @Override
@@ -42,6 +49,8 @@ public class BudgetDialogue extends AppCompatDialogFragment {
                 intent.putExtra("keybudgetName", budgetName);
                 intent.putExtra("keybudgetAmount", budgetAmount);
                 intent.putExtra("number_of_items", numberOfItems);
+                intent.putExtra("ID", budget_id);
+                intent.putExtra("NEW PROJECT", new_project);
 
                 startActivity(intent);
 

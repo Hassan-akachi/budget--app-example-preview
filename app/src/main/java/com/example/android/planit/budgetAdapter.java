@@ -16,6 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
+
+    // this interface is to update total amount in the budget page activity as the user enters new data in the
+    interface updateTotalInterface{
+        void updateTotal(int total);
+
+    }
+    private updateTotalInterface updateTotalInterface;
     Context context;
     int total;
     public  ArrayList<ItemModel> budgetModelList;
@@ -89,6 +96,8 @@ public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
                     model.setTotal(total);
                     holder.totalView.setText(String.valueOf(total));
                     tempData.set(position, model);
+                    // update the total amount in budget page activity
+                    updateTotalInterface.updateTotal(calculateTotal());
                 }
             }
         });
@@ -113,6 +122,8 @@ public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
                     holder.totalView.setText(String.valueOf(total));
                     model.setAmount(Integer.parseInt(editable.toString()));
                     tempData.set(position, model);
+                    // update the total amount in budget page activity
+                    updateTotalInterface.updateTotal(calculateTotal());
                 }
             }
         });
@@ -121,6 +132,14 @@ public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
         holder.amountView.setText(String.valueOf(tempData.get(position).getAmount()));
         holder.totalView.setText(String.valueOf(tempData.get(position).getTotal()));
 
+    }
+
+    private int calculateTotal() {
+        int total = 0;
+        for (ItemModel itemModel : tempData){
+            total = total + itemModel.getTotal();
+        }
+        return total;
     }
 
     @Override
@@ -160,6 +179,10 @@ public class budgetAdapter extends RecyclerView.Adapter<budgetAdapter.budget> {
 
     public void setFinishedLoadingLayout(Boolean finishedLoadingLayout) {
         this.finishedLoadingLayout = finishedLoadingLayout;
+    }
+
+    public void setUpdateTotalInterface(budgetAdapter.updateTotalInterface updateTotalInterface) {
+        this.updateTotalInterface = updateTotalInterface;
     }
 }
 

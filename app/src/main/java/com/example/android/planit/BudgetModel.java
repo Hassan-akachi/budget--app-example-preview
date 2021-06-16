@@ -41,6 +41,7 @@ public class BudgetModel {
     public void setBudgetAmount(int budgetAmount) {
         this.budgetAmount = budgetAmount;
     }
+
     public int getTotalAmount() {
         return TotalAmount;
     }
