@@ -12,16 +12,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class MainRecycleAdapter extends RecyclerView.Adapter<MainRecycleAdapter.ViewHolder> {
+public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapter.ViewHolder> {
+
+
     public interface onCLickListener{
         void onClick(BudgetModel budgetModel);
     }
 
     private  onCLickListener onCLickListener;
     private Context context;
+
+
+
     ArrayList<BudgetModel> ModelArrayList;
 
-    public MainRecycleAdapter(Context context, ArrayList<BudgetModel>ModelArrayList){
+    public MainRecyclerAdapter(Context context, ArrayList<BudgetModel>ModelArrayList){
         this.context=context;
         this.ModelArrayList = ModelArrayList;
     }
@@ -42,10 +47,23 @@ public class MainRecycleAdapter extends RecyclerView.Adapter<MainRecycleAdapter.
         amountItemName = cardView.findViewById(R.id.budget_item_amount);
         NameItem = cardView.findViewById(R.id.budget_item_name);
         TotalItem = cardView.findViewById(R.id.total_item_amount);
+        int amount = ModelArrayList.get(position).getBudgetAmount();
+        int total =  ModelArrayList.get(position).getTotalAmount();
 
-        amountItemName.setText(ModelArrayList.get(position).getBudgetAmount());
+        amountItemName.setText(String.valueOf(amount));
         NameItem.setText(ModelArrayList.get(position).getBudgetName());
-        TotalItem.setText(ModelArrayList.get(position).getTotalAmount());
+        TotalItem.setText(String.valueOf(total));
+        // set colour for total amount
+        if (amount < total){
+            //User total cost is greater than budget
+            TotalItem.setTextColor(context.getResources().getColor(R.color.red));
+        }else if(amount > total){
+            // User budget is greater than total amount of items
+            TotalItem.setTextColor(context.getResources().getColor(R.color.green));
+        }else {
+            //User budget is equal to total amount of items
+            TotalItem.setTextColor(context.getResources().getColor(R.color.black));
+        }
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,9 +87,13 @@ public class MainRecycleAdapter extends RecyclerView.Adapter<MainRecycleAdapter.
         }
     }
 
+
     public void setOnCLickListener(onCLickListener onCLickListener){
         this.onCLickListener = onCLickListener;
     }
-
+    public void emptyAdapter() {
+        ModelArrayList = new ArrayList<>();
+        notifyDataSetChanged();
+    }
 
 }

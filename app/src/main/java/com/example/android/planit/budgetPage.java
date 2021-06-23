@@ -3,6 +3,7 @@ package com.example.android.planit;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,16 +17,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.android.planit.data.DataUtils;
 import com.example.android.planit.data.PlanitDbHelper;
 
 import java.util.ArrayList;
 
-public class budgetPage extends AppCompatActivity {
+public class budgetPage extends AppCompatActivity implements budgetAdapter.updateTotalInterface {
     RecyclerView recyclerView;
     TextView budgetNameInput, budgetAmountInput, totalRoll, budgetTotaltv;
-    int budgetAmount, number_of_items, budget_ID, budgetTotalAmount;
+    int budgetAmount, budgetTotalAmount;
     private PlanitDbHelper planitDbHelper;
-    private SharedPreferences sharedPreferences;
+    /**
+     * The new_budget boolean below helps to know whether a new budget
+     * is being created or a former one is being updated.
+     * This helps to know whether the database is updated or
+     * a new one is inserted
+     */
+    private boolean new_budget = false;
+
     budgetAdapter adapter;
 
     @Override
@@ -40,24 +49,20 @@ public class budgetPage extends AppCompatActivity {
         budgetTotaltv = findViewById(R.id.budget_total_input);
         totalRoll = findViewById(R.id.total_roll);
 
-        budget_ID = getIntent().getIntExtra("ID", -1);
+        new_budget = getIntent().getBooleanExtra("NEW_BUDGET", true);
         String budgetName = getIntent().getStringExtra("keybudgetName");
         budgetAmount = getIntent().getIntExtra("keybudgetAmount", 0);
         budgetTotalAmount = getIntent().getIntExtra("totalAmount", 0);
 
-        if (budget_ID == -1) {
-            number_of_items = getIntent().getIntExtra("number_of_items", 0);
-            ArrayList<ItemModel> budgetModelArrayList = populate();
-            adapter = new budgetAdapter(this, budgetModelArrayList);
-            recyclerView.setAdapter(adapter);
-        }else {
-            displaydatabase(budget_ID);
+        if (new_budget) {
+            populateAdapter(getIntent().getIntExtra("number_of_items", 10));
+        } else {
+            displaydatabase(getIntent().getIntExtra("ID", 1));
         }
 
         budgetNameInput.setText(budgetName);
         budgetAmountInput.setText(String.valueOf(budgetAmount));
-        budgetTotaltv.setText(String.valueOf(budgetTotalAmount));
-
+        updateTotalTextView(budgetTotalAmount);
 
 
         Log.v("budgetPage", "budgetPage error adapter");
@@ -69,26 +74,25 @@ public class budgetPage extends AppCompatActivity {
 
             }
         });
-
-
     }
 
     private void displaydatabase(int budget_id) {
-        PlanitDbHelper planitDbHelper = new PlanitDbHelper(budgetPage.this);
-        ArrayList<ItemModel> list= planitDbHelper.getItemData(budget_id);
+        ArrayList<ItemModel> list = DataUtils.getInstance(this).getItemData(budget_id);
         adapter = new budgetAdapter(this, list);
+        adapter.setUpdateTotalInterface(budgetPage.this);
         recyclerView.setAdapter(adapter);
     }
 
     //
-    private ArrayList<ItemModel> populate() {
+    private void populateAdapter(int number_of_items) {
         ArrayList<ItemModel> list = new ArrayList<>();
-
         for (int i = 0; i < number_of_items; i++) {
-            ItemModel editModel = new ItemModel("", 0, 0, 0, 0 );
+            ItemModel editModel = new ItemModel("", 0, 0, 0, 0);
             list.add(editModel);
         }
-        return list;
+        adapter = new budgetAdapter(this, list);
+        adapter.setUpdateTotalInterface(budgetPage.this);
+        recyclerView.setAdapter(adapter);
     }
 
 
@@ -101,54 +105,44 @@ public class budgetPage extends AppCompatActivity {
         return true;
     }
 
-    public void insertBudgetData() {
-        String budgetNameString = budgetNameInput.getText().toString();
-        sharedPreferences = getSharedPreferences(Constants.BUDGET_PREFERENCES, MODE_PRIVATE);
-        int previousID = sharedPreferences.getInt(Constants.BUDGET_PREVIOUS_ID, 0);
-        ArrayList<ItemModel>itemModelArrayList =adapter.getData();
-        int BudgetTotal = 0;
-        for (ItemModel itemModels:itemModelArrayList){
-          BudgetTotal= BudgetTotal+itemModels.getTotal();
+    public void insertDataIntoDatabase() {
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.BUDGET_PREFERENCES, MODE_PRIVATE);
+         int previousID = sharedPreferences.getInt(Constants.BUDGET_PREVIOUS_ID, 0);
+         // Check to update or insert new
+        if (new_budget) {
+            DataUtils.getInstance(this).insertBudgetData(budgetNameInput.getText().toString(), adapter.getData(), budgetAmountInput.getText().toString(), previousID + 1);
+            DataUtils.getInstance(this).insertItemData(adapter.getData(), previousID + 1);
+        }else {
+            DataUtils.getInstance(this).updateBudgetData(budgetNameInput.getText().toString(), adapter.getData(), budgetAmountInput.getText().toString(), previousID + 1);
+            DataUtils.getInstance(this).updateItemData(adapter.getData(), previousID + 1);
         }
-        BudgetModel budgetModel = new BudgetModel(budgetNameString, previousID + 1, budgetAmount, BudgetTotal);
-        planitDbHelper.insetBudgetData(budgetModel);
-    }
-
-    private void insertItemData() {
-        ArrayList<ItemModel> data = adapter.getData();
-        ItemModel itemModel = new ItemModel();
-        for (int k = 0; k < data.size(); k++) {
-            itemModel.setName(data.get(k).getName());
-            itemModel.setAmount(data.get(k).getAmount());
-            itemModel.setQuantity(data.get(k).getQuantity());
-            itemModel.setTotal(data.get(k).getTotal());
-            itemModel.setID(sharedPreferences.getInt(Constants.BUDGET_PREVIOUS_ID, 0) + 1);
-            planitDbHelper.insertItemData(itemModel);
-            itemModel = new ItemModel();
-        }
-
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.save:
-                insertBudgetData();
-                insertItemData();
-                finish();
-                break;
-            case R.id.add_more_items:
-                addMoreItems();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == R.id.save) {
+            insertDataIntoDatabase();
+            finish();
+        } else if (itemId == R.id.add_more_items) {
+            addMoreItems();
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        insertDataIntoDatabase();
+        finish();
+        super.onBackPressed();
+    }
+
     private void addMoreItems() {
-        EditText editText =new EditText(this);
+        EditText editText = new EditText(this);
         editText.setHint("How many more items?");
+        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle("Number of items")
                 .setView(editText)
@@ -162,5 +156,24 @@ public class budgetPage extends AppCompatActivity {
                 .setCancelable(true);
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    @Override
+    public void updateTotal(int total) {
+        updateTotalTextView(total);
+    }
+
+    private void updateTotalTextView(int total) {
+        budgetTotaltv.setText(String.valueOf(total));
+        if (budgetAmount < total) {
+            //User total cost is greater than budget
+            budgetTotaltv.setTextColor(getResources().getColor(R.color.red));
+        } else if (budgetAmount > total) {
+            // User budget is greater than total amount of items
+            budgetTotaltv.setTextColor(getResources().getColor(R.color.green));
+        } else {
+            //User budget is equal to total amount of items
+            budgetTotaltv.setTextColor(getResources().getColor(R.color.black));
+        }
     }
 }

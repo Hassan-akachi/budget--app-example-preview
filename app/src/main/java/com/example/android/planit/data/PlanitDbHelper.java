@@ -51,7 +51,6 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = getWritableDatabase();
         database.insert(Constants.BUDGET_TABLE, null, contentValues);
 
-        database.close();
     }
 
     public void insertItemData(ItemModel itemModel){
@@ -70,28 +69,24 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase liteDatabase=getReadableDatabase();
         Cursor cursor = liteDatabase.rawQuery("SELECT * FROM " + Constants.BUDGET_TABLE , null);
         int i = 0;
-        while (i < cursor.getCount()){
+        while (cursor.moveToNext()){
             BudgetModel budgetModel = new BudgetModel();
-            if (i == 0) {
-                cursor.moveToFirst();
-            }
             budgetModel.setBudgetName(cursor.getString(1));
             budgetModel.setBudgetId(cursor.getInt(2));
             budgetModel.setBudgetAmount(cursor.getInt(3));
             budgetModel.setTotalAmount(cursor.getInt(4));
             budgetModelArrayList.add(budgetModel);
             cursor.moveToNext();
-            i++;
         }
         cursor.close();
         return budgetModelArrayList;
     }
 
-    public ArrayList<ItemModel> getItemData(int position){
+    public ArrayList<ItemModel> getItemData(int budgetID){
         ArrayList<ItemModel> list = new ArrayList<>();
         ItemModel itemModel = new ItemModel();
         SQLiteDatabase database =getReadableDatabase();
-        Cursor cursor = database.query(Constants.ITEMS_TABLE, null,  Constants.ITEM_ID + " = ?", new String[]{String.valueOf(position)}, null,null, null);
+        Cursor cursor = database.query(Constants.ITEMS_TABLE, null,  Constants.ITEM_ID + " = ?", new String[]{String.valueOf(budgetID)}, null,null, null);
         while (cursor.moveToNext()){
             itemModel.setName(cursor.getString(1));
             itemModel.setAmount(cursor.getInt(2));
@@ -102,12 +97,48 @@ public class PlanitDbHelper extends SQLiteOpenHelper {
             itemModel= new ItemModel();
 
         }
+        cursor.close();
         return list;
 
+    }
+    // delete a budget and all the items within it
+    public void deleteSpecificBudget(int id){
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.delete(Constants.BUDGET_TABLE, Constants.BUDGET_ID + " = ?", new String[]{String.valueOf(id)});
+        sqLiteDatabase.delete(Constants.ITEMS_TABLE, Constants.ITEM_ID + " = ?", new String[]{String.valueOf(id)});
+    }
+
+    // deletes all the user data in the database
+    public void deleteAllData(){
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.delete(Constants.BUDGET_TABLE, null,null);
+        sqLiteDatabase.delete(Constants.ITEMS_TABLE, null, null);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    public void updateBudgetData(BudgetModel budgetModel) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Constants.BUDGET_NAME, budgetModel.getBudgetName());
+        contentValues.put(Constants.BUDGET_ID, budgetModel.getBudgetId());
+        contentValues.put(Constants.BUDGET_AMOUNT, budgetModel.getBudgetAmount());
+        contentValues.put(Constants.TOTAL_AMOUNT,budgetModel.getTotalAmount());
+        SQLiteDatabase database = getWritableDatabase();
+        database.update(Constants.BUDGET_TABLE,  contentValues, Constants.BUDGET_ID + " = ?", new String[]{String.valueOf(budgetModel.getBudgetId())});
+
+    }
+
+    public void updateItemData(ItemModel itemModel) {
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        // first delete all former items for the budget
+        try {
+            sqLiteDatabase.delete(Constants.ITEMS_TABLE, Constants.ITEM_ID + " = ?", new String[]{String.valueOf(itemModel.getID())});
+        }catch (Exception exception){}finally {
+            // insert new items
+            insertItemData(itemModel);
+        }
     }
 }
